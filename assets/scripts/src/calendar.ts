@@ -6,6 +6,8 @@ import subMonths from "date-fns/subMonths";
 import locale from "date-fns/locale/pt-BR"
 
 const page = document.querySelector("#schedules-new");
+const page2 = document.querySelector("#time-options");
+const page3 = document.querySelector("#schedules-services")
 
 if (page) {
 
@@ -19,19 +21,11 @@ if (page) {
     const titulo = page.querySelector("h2") as HTMLHeadingElement;
     const calendar = page.querySelector(".days") as HTMLUListElement;
 
-    console.log(1);
-
     const render = () => {
-
-        console.log(2);
         titulo.innerText = format(inicioMes, "MMMM yyyy", { locale });
-        console.log(3);
-
     }
 
-    console.log(4);
-
-    btnProximo.addEventListener("click", ()=> {
+    btnProximo.addEventListener("click", () => {
         inicioMes = addMonths(inicioMes, 1);
         render();
     });
@@ -45,8 +39,25 @@ if (page) {
         inicioMes = startOfMonth(hoje);
         render();
     });
-    
-
     render();
+
+}
+
+if (page2) {
+
+    const hoje = new Date();
+    const horarioDia = page2.querySelector("h3") as HTMLHeadElement;
+    const marcarHorario = page2.querySelectorAll("label") as NodeListOf<HTMLLabelElement>;
+
+    const render = () => {
+        horarioDia.innerText = format(hoje, "cccc, d 'DE' MMMM 'DE' yyyy", { locale });
+    }
+    render();
+}
+
+if (page3) {
+    const serviceName = page3.querySelector(".name") as HTMLSpanElement;
+    const descriptionName = page3.querySelector(".description") as HTMLSpanElement;
+    const price = page3.querySelector(".price") as HTMLSpanElement;
 
 }
