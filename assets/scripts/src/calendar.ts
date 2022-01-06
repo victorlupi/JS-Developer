@@ -3,11 +3,13 @@ import endOfMonth from "date-fns/endOfMonth";
 import startOfMonth from "date-fns/startOfMonth";
 import addMonths from "date-fns/addMonths";
 import subMonths from "date-fns/subMonths";
+import startOfWeek from "date-fns/startOfWeek";
+import endOfWeek from "date-fns/endOfWeek";
+import addDays from "date-fns/addDays";
 import locale from "date-fns/locale/pt-BR"
+import { differenceInSeconds } from "date-fns";
 
 const page = document.querySelector("#schedules-new");
-const page2 = document.querySelector("#time-options");
-const page3 = document.querySelector("#schedules-services")
 
 if (page) {
 
@@ -22,7 +24,59 @@ if (page) {
     const calendar = page.querySelector(".days") as HTMLUListElement;
 
     const render = () => {
+
         titulo.innerText = format(inicioMes, "MMMM yyyy", { locale });
+
+        calendar.innerHTML = "";
+
+        let diaCorrente = startOfWeek(inicioMes);
+        const ultimoCalendario = endOfWeek(endOfMonth(inicioMes));
+
+        while (differenceInSeconds(ultimoCalendario, diaCorrente) > 0) {
+
+            const li = document.createElement("li");
+
+            li.innerText = format(diaCorrente, 'd');
+
+            li.dataset.schedule = format(diaCorrente, 'yyyy-MM-dd');
+
+            if (format(diaCorrente, 'yyyyMM') < format(inicioMes, 'yyyyMM')) {
+                li.classList.add('month-prev');
+            }
+
+            if (format(diaCorrente, 'yyyyMM') > format(inicioMes, 'yyyyMM')) {
+                li.classList.add('month-next');
+            }
+
+            if (format(diaCorrente, 'yyyyMMdd') === format(hoje, 'yyyyMMdd')) {
+                li.classList.add('active');
+            }
+
+            li.addEventListener("click", (e: Event) => {
+
+                const selected = calendar.querySelector(".selected");
+
+                if (selected) {
+                    selected.classList.remove("selected");
+                }
+
+                const myLi = e.target as HTMLLIElement;
+
+                myLi.classList.add("selected");
+
+                const scheduleAt = document.querySelector("[name=schedule_at]") as HTMLInputElement;
+
+                scheduleAt.value = myLi.dataset.schedule ?? "";
+
+            });
+
+            calendar.appendChild(li);
+
+            diaCorrente = addDays(diaCorrente, 1);
+
+        }
+
+
     }
 
     btnProximo.addEventListener("click", () => {
@@ -39,25 +93,8 @@ if (page) {
         inicioMes = startOfMonth(hoje);
         render();
     });
+
+
     render();
-
-}
-
-if (page2) {
-
-    const hoje = new Date();
-    const horarioDia = page2.querySelector("h3") as HTMLHeadElement;
-    const marcarHorario = page2.querySelectorAll("label") as NodeListOf<HTMLLabelElement>;
-
-    const render = () => {
-        horarioDia.innerText = format(hoje, "cccc, d 'DE' MMMM 'DE' yyyy", { locale });
-    }
-    render();
-}
-
-if (page3) {
-    const serviceName = page3.querySelector(".name") as HTMLSpanElement;
-    const descriptionName = page3.querySelector(".description") as HTMLSpanElement;
-    const price = page3.querySelector(".price") as HTMLSpanElement;
 
 }
